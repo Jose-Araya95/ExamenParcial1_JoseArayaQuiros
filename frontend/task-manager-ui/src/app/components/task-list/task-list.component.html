@@ -1,0 +1,106 @@
+<div class="container">
+  <header>
+    <h1>Personal Task Manager</h1>
+  </header>
+
+  <section class="form-section">
+    <h2>{{ editingTaskId ? 'Edit Task' : 'Create New Task' }}</h2>
+    <form [formGroup]="taskForm" (ngSubmit)="saveTask()">
+      <div class="form-group">
+        <label for="title">Title *</label>
+        <input id="title" type="text" formControlName="title" placeholder="Task title..." />
+        <span class="error" *ngIf="taskForm.get('title')?.touched && taskForm.get('title')?.invalid">
+          Title is required (minimum 3 characters).
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" formControlName="description" placeholder="Task description..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dueDate">Due Date *</label>
+          <input id="dueDate" type="date" formControlName="dueDate" />
+          <span class="error" *ngIf="taskForm.get('dueDate')?.touched && taskForm.get('dueDate')?.invalid">
+            Due date is required.
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="priority">Priority *</label>
+          <select id="priority" formControlName="priority">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button type="submit" [disabled]="taskForm.invalid">
+          {{ editingTaskId ? 'Update Task' : 'Create Task' }}
+        </button>
+        <button type="button" class="btn-secondary" (click)="resetForm()" *ngIf="editingTaskId">
+          Cancel Edit
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section class="controls-section">
+    <div class="search-box">
+      <input type="text" [(ngModel)]="searchQuery" (input)="loadTasks()" placeholder="Search title or description..." />
+    </div>
+
+    <div class="filters">
+      <select [(ngModel)]="selectedStatus" (change)="loadTasks()">
+        <option value="all">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="completed">Completed</option>
+      </select>
+
+      <select [(ngModel)]="selectedPriority" (change)="loadTasks()">
+        <option value="">All Priorities</option>
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </select>
+
+      <select [(ngModel)]="selectedSort" (change)="loadTasks()">
+        <option value="createdAt">Sort by Creation</option>
+        <option value="duedate">Sort by Due Date</option>
+        <option value="priority">Sort by Priority</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="list-section">
+    <div *ngIf="tasks.length === 0" class="empty-state">
+      No tasks found matching your criteria.
+    </div>
+
+    <div *ngFor="let task of tasks" class="task-card" [class.completed]="task.isCompleted">
+      <div class="task-header">
+        <h3>{{ task.title }}</h3>
+        <span class="badge" [class]="task.priority.toLowerCase()">{{ task.priority }}</span>
+      </div>
+
+      <p class="task-desc">{{ task.description }}</p>
+
+      <div class="task-footer">
+        <span>Due: {{ task.dueDate | date:'mediumDate' }}</span>
+        <span class="status-indicator">{{ task.isCompleted ? 'Completed' : 'Pending' }}</span>
+      </div>
+
+      <div class="task-actions">
+        <button (click)="toggleComplete(task)" class="btn-status">
+          {{ task.isCompleted ? 'Mark Pending' : 'Mark Complete' }}
+        </button>
+        <button (click)="startEdit(task)" class="btn-edit">Edit</button>
+        <button (click)="deleteTask(task.id)" class="btn-delete">Delete</button>
+      </div>
+    </div>
+  </section>
+</div>
