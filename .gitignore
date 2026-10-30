@@ -1,0 +1,15 @@
+# Build binaries & dependencies
+bin/
+obj/
+dist/
+node_modules/
+
+# IDE & local settings
+.vs/
+.vscode/
+*.user
+*.suo
+appsettings.Development.json
+
+# Environment files
+.env
